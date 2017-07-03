@@ -148,7 +148,8 @@ books %>%
   geom_vline(aes(xintercept = median(nwords)), color = "red") +
   geom_vline(aes(xintercept = mean(nwords)), color = "green") +
   xlim(0, 75) +
-  facet_wrap(~title)
+  facet_wrap(~title) +
+  labs(x="Liczba słów w zdaniu", y="Liczba zdań")
 
 ## dla całej książki
 books %>%
@@ -343,7 +344,10 @@ word_count_comp %>%
   ggplot() +
   geom_point(aes(n.x, n.y, color=as.factor(clusters))) +
   scale_y_log10() +
-  scale_x_log10()
+  scale_x_log10() +
+  labs(x="Udział procentowy słowa w ksiazkach z Harrym Potterem",
+       y="Udział procentowy słowa w ksiazkach bez Harrego Pottera",
+       color = "Grupa słów")
 
 # która grupa jest najbardziej u góry? (największe częstości słów)
 clu <- word_count_comp %>% filter(n.y == max(n.y)) %>% .$clusters
@@ -371,8 +375,11 @@ by(biwords_count, biwords_count$title,
    function(x) {
      wordcloud(x$word, x$n,
                max.words = 100,
-               scale=c(2.0, 0.5))
-     text(0.95, 0.95, unique(x$title))
+               scale=c(2.8, 0.7),
+               colors = RColorBrewer::brewer.pal(9, "Greens")[4:9])
+     text(0.05, 0.95,
+          unique(paste0(x$title, " (", x$year, ")")),
+          col = "red", adj = c(0,0))
    })
 
 
@@ -382,7 +389,6 @@ biwords_count_HP <- biwords_count %>%
   summarise(n = sum(n)) %>%
   ungroup() %>%
   mutate(n = n/sum(n))
-
 
 biwords_count_nonHP <- biwords_count %>%
   filter(!HP) %>%
@@ -399,7 +405,10 @@ biwords_count_comp %>%
   ggplot() +
   geom_point(aes(n.x, n.y)) +
   scale_y_log10() +
-  scale_x_log10()
+  scale_x_log10() +
+  labs(x="Udział procentowy bigramu w ksiazkach z Harrym Potterem",
+       y="Udział procentowy bigramu w ksiazkach bez Harrego Pottera")
+
 
 cor(biwords_count_comp$n.x, biwords_count_comp$n.y)
 
